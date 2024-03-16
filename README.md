@@ -33,6 +33,7 @@ source ./.bashrc
 
 # 환경변수 파일 설정
 vi var.sh
+
 # bash 문법이라고 표시
 #!/bin/bash
 GITHUB_ID="hansung1908"
@@ -49,6 +50,7 @@ export JAR_PATH
 
 # 환경변수 파일 실행
 vi deploy.sh
+
 #!/bin/bash
 source ./var.sh
 echo $GITHUB_ID
@@ -58,9 +60,31 @@ chmod u+x deploy.sh
 ```
 - 여러 파일에서 사용하기 위해 파일로 설정
 
-# 환경변수 적용 범위
+### 환경변수 적용 범위
 - ./bashrc - 어디에서나 적용
 - 터미널 만들고 source 적용 - 터미널이 꺼지기 직전까지
 - 쉘 스크립트(파일)로 변수를 만들고 다른 파일에서 실행하기 위해서는
 - deploy.sh 파일이 실행되는 동안에만 변수를 사용할 수 있으면 됨
 - 파일에 source 명령어 작성
+
+### 재배포를 고려하여 cron 종료
+```sh
+vi deploy.sh
+
+#!/bin/bash
+
+# 1. env variable
+source ./var.sh
+echo "1. env variable setting complete"
+
+# 2. cron delete
+touch crontab_delete
+crontab crontab_delete
+rm crontab_delete
+echo "2. cron delete complete"
+```
+- ec2 서버에 프로젝트가 올라가 실행되면 포트가 할당되고 pid가 부여됨
+- cron 파일은 자동으로 해당 pid에 접근하여 종료시 서버 재시작
+- 재배포 시, 프로젝트 삭제 -> github 다운로드 -> jar 빌드 -> 실행 (약 30초 소요)
+- 해당 과정에서 서버가 종료되지만 다시 실행할 필요가 없음
+- 하지만 cron 파일로 인해 재시작하므로 일단 삭제하고 재배포가 종료되는 시점에 cron을 재등록 

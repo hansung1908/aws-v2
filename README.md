@@ -110,3 +110,31 @@ PROJECT_PID="$(pgrep -f ${PROJECT_NAME}-${PROJECT_VERSION}.jar)"
 # /home/ubuntu/aws-v2/build/libs/aws-v2-0.0.1.jar
 JAR_PATH="${HOME}/${PROJECT_NAME}/build/libs/${PROJECT_NAME}-${PROJECT_VERSION}.jar"
 ```
+- 실제 스크립트 실행을 위해 deploy.sh 해당 내용 추가
+```sh
+# 3. server checking
+# -n은 문자열 길이가 0이 아니면 참
+# 해당 명령어가 참이라면 프로세스가 실행 중
+if [ -n "${PROJECT_PID}" ]; then
+  # re deploy
+  kill -9 $PROJECT_PID
+  echo "3. project kill complete"
+else
+  # first deploy
+
+  # 3-1 apt update
+  # bash 이용하므로 apt를 apt-get으로 수정
+  # -y는 설치여부를 무조건 yes로 선택한다는 옵션
+  # 1>/dev/null은 설치시 나오는 진행상황을 띄우지 않고 버린다는 명령어
+  sudo apt-get -y update 1>/dev/null
+  echo "3-1. apt-get update complete"
+
+  # 3-2 jdk install
+  sudo apt-get -y install openjdk-11-jdk 1>/dev/null
+  echo "3-2. jdk install complete"
+
+  # 3-3 timezone
+  sudo timedatectl set-timezone Asia/Seoul
+  echo "3-3. timezone setting complete"
+fi
+```

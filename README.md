@@ -87,4 +87,26 @@ echo "2. cron delete complete"
 - cron 파일은 자동으로 해당 pid에 접근하여 종료시 서버 재시작
 - 재배포 시, 프로젝트 삭제 -> github 다운로드 -> jar 빌드 -> 실행 (약 30초 소요)
 - 해당 과정에서 서버가 종료되지만 다시 실행할 필요가 없음
-- 하지만 cron 파일로 인해 재시작하므로 일단 삭제하고 재배포가 종료되는 시점에 cron을 재등록 
+- 하지만 cron 파일로 인해 재시작하므로 일단 삭제하고 재배포가 종료되는 시점에 cron을 재등록
+
+### 서버 pid 찾아서 종료시키기
+- 빌드시 aws-v2-0.0.1.jar 형태로 실행 파일이 만들어짐
+- gradle은 프로젝트에 포함됨 라이브러리를 관리하며 빌드시 라이브러리를 추가시켜 줌
+- aws-v2-0.0.1-plain.jar은 gradle이 포함이 안된 실행파일로 같이 만들어짐
+- 하지만 위 파일은 필요가 없으므로 프로젝트에 build.gradle 설정 파일에 아래의 명령어를 추가
+```sh
+jar {
+  enable = false
+}
+```
+- 서버 pid를 찾아 종료시키기 위해 var.sh의 남은 부분 채우기
+```sh
+# 프로젝트의 pid 찾기
+# pgrep은 pid를 찾는 명령어, -f는 프로세스 이름이 패턴과 일치하는 대조하는 옵션
+# pgrep -f aws-v2-0.0.1.jar
+PROJECT_PID="$(pgrep -f ${PROJECT_NAME}-${PROJECT_VERSION}.jar)"
+
+# 실행 파일의 위치
+# /home/ubuntu/aws-v2/build/libs/aws-v2-0.0.1.jar
+JAR_PATH="${HOME}/${PROJECT_NAME}/build/libs/${PROJECT_NAME}-${PROJECT_VERSION}.jar"
+```

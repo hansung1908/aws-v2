@@ -138,3 +138,44 @@ else
   echo "3-3. timezone setting complete"
 fi
 ```
+
+### 프로젝트 다운로드 및 빌드
+- deploy.sh에 해당 내용 추가
+```sh
+# 4. project folder delete
+# 프로젝트 다운 전 기존에 있던 폴더와의 충돌을 피하기 위해 기존 폴더 삭제
+# rm -rf /home/ubuntu/aws-v2
+rm -rf ${HOME}/${PROJECT_NAME}
+echo "4. project folder delete complete"
+
+# 5. git clone
+# 프로젝트 세팅
+git clone https://github.com/${GITHUB_ID}/${PROJECT_NAME}.git
+# 확실하진 않지만 apt-get update, install처럼 동기식(일의 순서가 존재)처럼 동작하지 않고
+# 비동기식으로 동작하므로 clone의 실행을 보장해주기 위해 3초 정도의 대기시간 부여
+sleep 3s
+echo "5. git clone complete"
+
+# 6. gradle +x
+# gradle을 통해 빌드하기 위해 실행권한 부여
+chmod u+x ${HOME}/${PROJECT_NAME}/gradlew
+echo "6. gradle u+x complete"
+
+# 7. build
+cd ${HOME}/${PROJECT_NAME}
+./gradlew build
+echo "7. gradlew build complete"
+```
+- 추가 후 직접 실행을 통한 테스트
+```shell
+# jar 파일 위치로 이동
+cd /aws-v2/build/libs
+
+# jar 실행
+# 그냥 실행할 경우 application-dev.yml로 설정되어 있어 8081 포트를 통해 접속 가능
+java -jar aws-v2-0.0.1.jar
+
+# application-prod.jar로 변경하여 8080 포트로 접속
+java -jar -Dspring.profiles.active=prod aws-v2-0.0.1.jar
+```
+- 접속 주소는 aws에서 설정한 static ip에 :8080/aws/v2를 붙혀서 접속

@@ -179,3 +179,14 @@ java -jar aws-v2-0.0.1.jar
 java -jar -Dspring.profiles.active=prod aws-v2-0.0.1.jar
 ```
 - 접속 주소는 aws에서 설정한 static ip에 :8080/aws/v2를 붙혀서 접속
+
+### 서버 실행하기
+- 서버를 자동 실행하기 위해 해당 내용 deploy.sh에 추가
+```shell
+# 8. start jar
+# application-prod.jar로 변경하여 서버 실행
+# nohup 명령어는 백그라운드 실행을 위해 사용
+# 로그는 /home/ubuntu에 남겨 지워지지 않게 저장
+nohup java -jar -Dspring.profiles.active=prod ${JAR_PATH} 1>${HOME}/log.out 2>${HOME}/err.out &
+echo "8. start server complete"
+```

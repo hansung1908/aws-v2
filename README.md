@@ -190,3 +190,38 @@ java -jar -Dspring.profiles.active=prod aws-v2-0.0.1.jar
 nohup java -jar -Dspring.profiles.active=prod ${JAR_PATH} 1>${HOME}/log.out 2>${HOME}/err.out &
 echo "8. start server complete"
 ```
+
+### cron 등록
+- 서버가 종료 되었을때 자동으로 재시작 하기 위해 cron 등록
+- 해당 내용을 deploy.sh에 추가
+```sh
+# 9. cron registration
+touch crontab_new
+echo "* * * * * ${HOME}/check-and-restart.sh" 1>>crontab_new
+# register the others... you use >> (append)
+# >는 덮어씌워 저장하므로 이 뒤에 더 추가하려면 >> 사용
+crontab crontab_new
+rm crontab_new
+echo "9. cron registration complete"
+```
+- 재시작을 위한 check-and-restart.sh 추가 및 내용 추가
+```sh
+vi check-and-restart.sh
+
+#!/bin/bash
+
+source ./var.sh
+
+# pid가 없으면 참, 서버가 동작하지 않으면 참
+if [ -z "$PROJECT_PID" ]; then
+  nohup java -jar -Dspring.profiles.active=prod ${JAR_PATH} 1>${HOME}/log.out 2>${HOME}/err.out &
+fi
+
+# 실행을 위한 실행 권한 부여
+chmod u+x check-and-restart.sh
+```
+- jar 파일로 배포시, 빌드 과정에서 항상 테스트를 통과해야 빌드가 되므로 컨트롤러에 상응하는 테스트 파일을 만들어야 함
+- 만약 테스트 없이 jar 빌드를 하고 싶다면 해당 내용으로 gradle 실행
+```sh
+./gradlew build -x test
+```

@@ -1,5 +1,24 @@
 # aws-v2
 
+### Springboot 2.6.6, JDK 11
+- devtools
+- springweb
+- lombok
+
+### 배포 위치 
+- EC2
+
+### 배포 방법
+- 개발환경(집컴퓨터)에서 github 업로드
+- var.sh check-and-restart.sh deploy.sh 3개 파일 deploy.tar로 압축되어 있음(실행권한 이미 부여됨).
+- EC2의 /home/ubuntu 경로로 전송
+- tar -xvf deploy.tar
+- 프로덕션(EC2)에서 deploy.sh 파일 실행
+
+### 재배포 방법
+- 개발환경(집컴퓨터)에서 github 업로드
+- 프로덕션(EC2)에서 deploy.sh 파일 실행
+
 ### 목표
 - 스크립트 작성으로 배포 자동화하기, 재배포 자동화하기
 
@@ -256,3 +275,15 @@ tar -cvf deploy.tar check-and-restart.sh deploy.sh var.sh
 - 생성된 압축 파일을 로컬 폴더로 올기기 위해 session을 열어 sftp 연결을 설정
 - 이때 host는 aws ec2 서버의 ip, username은 ubuntu, private key는 aws ec2 서버를 설정할 때 쓰던 키 파일로 설정
 - 이후 접속이 완료되면 왼쪽 창을 통해 원하는 로컬 폴더를 열고, 오른쪽 창에서 deploy.tar 파일을 찾아 왼쪽으로 드래그
+
+### 배포
+- tar 파일을 ec2 서버에 옮김
+- 압축해제 후 실행
+```sh
+# 압축 해제
+tar -xvf deploy.tar
+
+# 실행
+./deploy.sh
+```
+- 여태까지 했던 것들이 정상적으로 잘 작동

@@ -225,3 +225,34 @@ chmod u+x check-and-restart.sh
 ```sh
 ./gradlew build -x test
 ```
+
+### tar 압축
+```sh
+# tar 옵션 명령어
+# tar로 묶을 때
+-c
+
+# 압축을 하거나 풀때 출력을 화면에 보여줄지 말지
+-v
+
+# 파일 이름 지정
+-f
+
+# tar로 압축 해제
+-x
+
+# a.txt와 b.txt를 hello.tar라는 이름으로 압축
+# 이때 어떤 파일을 압축 했는지 화면에 출력
+tar -cvf hello.tar a.txt b.txt
+
+# hello.tar를 압축 해제
+tar -xvf hello.tar
+```
+- 배포시 필요한 파일을 압축 저장 후 로컬 폴더로 옮김
+```sh
+# 세 파일을 deploy.tar라는 이름으로 압축
+tar -cvf deploy.tar check-and-restart.sh deploy.sh var.sh
+```
+- 생성된 압축 파일을 로컬 폴더로 올기기 위해 session을 열어 sftp 연결을 설정
+- 이때 host는 aws ec2 서버의 ip, username은 ubuntu, private key는 aws ec2 서버를 설정할 때 쓰던 키 파일로 설정
+- 이후 접속이 완료되면 왼쪽 창을 통해 원하는 로컬 폴더를 열고, 오른쪽 창에서 deploy.tar 파일을 찾아 왼쪽으로 드래그
